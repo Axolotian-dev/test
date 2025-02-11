@@ -6,9 +6,8 @@ on: [push,workflow_dispatch]
 jobs:
   update_file:
     runs-on: ubuntu-latest  # This will run on the latest Ubuntu runner
-
     steps:
-    
+#--------------------    
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
@@ -17,7 +16,7 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-
+#--------------------
       - name: Modify JSON file
         run: |
           KEYS_VALUES='{
@@ -38,7 +37,7 @@ jobs:
               end;
             clean($kv) + $kv
           ' test.json > temp.json && mv temp.json test.json
-
+#--------------------
       - name: Commit and push changes
         run: |
           git add test.json
