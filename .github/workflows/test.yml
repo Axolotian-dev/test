@@ -18,8 +18,32 @@ jobs:
 #--------------------
       - name: Modify JSON file
         run: |
-          KEYS_VALUES='{"key1": "value1", "key2": "value2", "key3": "value3"}'
-          jq --argjson kv "$KEYS_VALUES" 'with_entries(select(.key as $k | $kv | has($k))) + $kv' test.json > temp.json && mv temp.json test.json
+          # Define test data (an array of key-value objects)
+          KEYS_VALUES='[
+            {"name": "key1", "value": "value1"},
+            {"name": "key2", "value": "value2"},
+            {"name": "key3", "value": "value3"}
+          ]'
+
+          # Process each key-value pair
+          for kv in $(echo "$KEYS_VALUES" | jq -r '.[] | @base64'); do
+            _jq() {
+              echo ${kv} | base64 --decode | jq -r ${1}
+            }
+
+            key=$(_jq '.name')
+            value=$(_jq '.value')
+
+            # Update or add the key-value pair
+            jq --arg key "$key" --arg value "$value" \
+              'if has($key) then .[$key] = $value else . + {($key): $value} end' \
+              test.json > temp.json && mv temp.json test.json
+          done
+
+          # Remove any keys in test.json not in the list
+          jq --argjson kv "$KEYS_VALUES" '
+            . |= with_entries(select(.key as $k | $kv | map(.name) | index($k)))' test.json > temp.json && mv temp.json test.json
+
 #--------------------
       - name: Commit and push changes
         run: |
