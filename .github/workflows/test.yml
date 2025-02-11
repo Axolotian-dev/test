@@ -20,8 +20,24 @@ jobs:
 
       - name: Modify JSON file
         run: |
-          KEYS_VALUES='{"key1": "value1", "key2": "value2", "key3": "value3"}'
-          jq --argjson kv "$KEYS_VALUES" 'with_entries(select(.key as $k | $kv | has($k))) + $kv' test.json > temp.json && mv temp.json test.json
+          KEYS_VALUES='{
+            "key1": "value1",
+            "key2": {
+              "subkey1": "subvalue1",
+              "subkey2": "subvalue2"
+            },
+            "key3": "value3"
+          }'
+
+          jq --argjson kv "$KEYS_VALUES" '
+            def clean($kv): 
+              if (type == "object") then 
+                with_entries(select(.key as $k | $kv | has($k)) | .value |= clean($kv[.key])) 
+              else 
+                . 
+              end;
+            clean($kv) + $kv
+          ' test.json > temp.json && mv temp.json test.json
 
       - name: Commit and push changes
         run: |
