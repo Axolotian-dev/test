@@ -29,13 +29,16 @@ jobs:
           }'
 
           jq --argjson kv "$KEYS_VALUES" '
-            def clean($kv): 
-              if (type == "object") then 
-                with_entries(select(.key as $k | $kv | has($k)) | .value |= clean($kv[.key])) 
-              else 
-                . 
+            def clean(obj, ref): 
+              if (obj | type) == "object" and (ref | type) == "object" then 
+                reduce (obj | keys[]) as $k ({}; 
+                  if ref | has($k) then 
+                    .[$k] = clean(obj[$k]; ref[$k]) 
+                  else . end
+                ) 
+              else ref 
               end;
-            clean($kv) + $kv
+            clean(. ; $kv)
           ' test.json > temp.json && mv temp.json test.json
 #--------------------
       - name: Commit and push changes
