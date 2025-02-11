@@ -1,13 +1,14 @@
-#API_TOKEN_GITHUB
-name: Update JSON file
+name: Modify Test JSON File
 
-on: [push,workflow_dispatch]
+on:
+  workflow_dispatch:  # Allows the workflow to be triggered manually from the GitHub interface
 
 jobs:
-  update_file:
+  modify_test_json_file:
     runs-on: ubuntu-latest  # This will run on the latest Ubuntu runner
+
     steps:
-#--------------------    
+    
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
@@ -16,34 +17,12 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-#--------------------
       - name: Modify JSON file
         run: |
-          KEYS_VALUES='{
-            "key1": "value1",
-            "key2": {
-              "subkey1": "subvalue1",
-              "subkey2": "subvalue2"
-            },
-            "key3": "value3"
-          }'
-
-          jq --argjson kv "$KEYS_VALUES" '
-            def clean(obj, ref): 
-              if (obj | type) == "object" and (ref | type) == "object" then 
-                reduce (obj | keys[]) as $k ({}; 
-                  if ref | has($k) then 
-                    .[$k] = clean(obj[$k]; ref[$k]) 
-                  else . end
-                ) 
-              else ref 
-              end;
-            clean(. ; $kv)
-          ' test.json > temp.json && mv temp.json test.json
-#--------------------
+          KEYS_VALUES='{"key1": "value1", "key2": ["list1","list2"], "key3": "value3"}'
+          jq --argjson kv "$KEYS_VALUES" 'with_entries(select(.key as $k | $kv | has($k))) + $kv' test.json > temp.json && mv temp.json test.json
       - name: Commit and push changes
         run: |
           git add test.json
-          git commit -m "Updated JSON"
+          git commit -m "Add 'aaa' to messages"
           git push https://Axolotian-dev:${{ secrets.TOKEN_THING }}@github.com/${{ github.repository }}.git HEAD:main
-        
