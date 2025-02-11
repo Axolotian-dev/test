@@ -1,0 +1,32 @@
+name: Modify Test JSON File
+
+on:
+  push:
+    branches:
+      - main  # Trigger this action on pushes to the 'main' branch
+
+jobs:
+  modify_test_json_file:
+    runs-on: ubuntu-latest  # This will run on the latest Ubuntu runner
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2  # Checkout the code from your repo
+
+      - name: Modify the test JSON file
+        run: |
+          # Ensure the JSON file exists and has an array of messages if it's empty
+          if [ ! -f test.json ]; then
+            echo '{"messages": []}' > test.json
+          fi
+          
+          # Add a new "aaa" to the messages array in the JSON file
+          jq '.messages += ["aaa"]' test.json > tmp.json && mv tmp.json test.json
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add test.json
+          git commit -m "Add 'aaa' to messages"
+          git push
