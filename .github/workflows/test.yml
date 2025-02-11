@@ -33,4 +33,4 @@ jobs:
           git commit -m "Add 'aaa' to messages"
           git push https://github.com/${{ github.repository }}.git HEAD:main
         env:
-          GITHUB_TOKEN: ${{ secrets.API_TOKEN_GITHUB }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN_THING }}
