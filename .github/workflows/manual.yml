@@ -10,21 +10,29 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
+    
+    # Step to add text to file.txt
+    - name: Add "hi" to file.txt
+      run: |
+        echo "hi" >> file.txt
+        cat file.txt  # To confirm the content in file.txt
+
     - name: Set up JDK
       uses: actions/setup-java@v1
       with:
         java-version: 16
+
     - name: Build with Gradle
       run: ./gradlew run -Dorg.gradle.daemon=false -Dgithubtoken="Bearer ${{ secrets.GITHUB_TOKEN }}"
+
     - name: Push changes
       run: |
         git config --global user.email "actions@github.com"
         git config --global user.name "Github Actions"
         git add file.txt
-        git commit --allow-empty -m "[auto-update]"
-        git push https://Anuken:${{ secrets.API_TOKEN_GITHUB }}@github.com/Axolotian-dev/test/
+        git commit --allow-empty -m "[auto-update] Added 'hi' to file.txt"
+        git push https://Axolotian-dev:${{ secrets.API_TOKEN_GITHUB }}@github.com/Axolotian-dev/test
