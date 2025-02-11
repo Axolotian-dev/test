@@ -1,8 +1,4 @@
 {
-  "key1": "oldValue",
-  "key2": {
-    "oldsubkey": "oldvalue",
-    "subkey1": "oldsubvalue"
-  },
-  "key4": "extra"
+  "key1": "value1",
+  "key2": {}
 }
