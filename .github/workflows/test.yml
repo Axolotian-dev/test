@@ -21,7 +21,8 @@ jobs:
 
       - name: Modify JSON file
         run: |
-          jq '.newKey = "newValue"' test.json > temp.json && mv temp.json test.json
+          KEYS_VALUES='{"key1": "value1", "key2": "value2", "key3": "value3"}'
+          jq --argjson kv "$KEYS_VALUES" 'with_entries(select(.key as $k | $kv | has($k))) + $kv' test.json > temp.json && mv temp.json test.json
 
       - name: Commit and push changes
         run: |
