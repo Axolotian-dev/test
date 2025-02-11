@@ -1,0 +1,39 @@
+name: Update File with New Tile
+
+# You can trigger this workflow manually (via the "Workflow Dispatch" event)
+# or on a push to a specific branch.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main  # adjust if you want to trigger on another branch
+
+jobs:
+  modify-file:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repository code.
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # 2. Modify the file (e.g., append a new "tile" to file.txt).
+      - name: Append new tile to file.txt
+        run: |
+          echo "New tile" >> file.txt
+          # Alternatively, run any script or command to modify your file as needed.
+
+      # 3. Configure Git and commit the changes.
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add file.txt
+          # The following command commits only if there are changes.
+          git diff-index --quiet HEAD || git commit -m "Add new tile to file.txt"
+
+      # 4. Push the changes back to the repository.
+      - name: Push changes
+        run: git push
