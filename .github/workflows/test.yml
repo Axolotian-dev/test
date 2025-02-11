@@ -1,9 +1,7 @@
 name: Modify Test JSON File
 
 on:
-  push:
-    branches:
-      - main  # Trigger this action on pushes to the 'main' branch
+  workflow_dispatch:  # Allows the workflow to be triggered manually from the GitHub interface
 
 jobs:
   modify_test_json_file:
