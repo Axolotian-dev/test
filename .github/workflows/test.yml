@@ -29,8 +29,11 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          echo "1"
           git add test.json
+          echo "2"
           git commit -m "Add 'aaa' to messages"
+          echo  "3"
           git push https://Axolotian-dev:${{ secrets.TOKEN_THING }}@github.com/${{ github.repository }}.git HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_THING }}
