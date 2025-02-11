@@ -21,7 +21,7 @@ jobs:
 
       - name: Modify the test JSON file
         run: |
-          jq '.newKey = "newValue"' data.json > temp.json && mv temp.json data.j
+          jq '.newKey = "newValue"' test.json > temp.json && mv temp.json data.j
 
       - name: Commit and push changes
 
