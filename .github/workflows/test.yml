@@ -21,13 +21,7 @@ jobs:
 
       - name: Modify the test JSON file
         run: |
-          # Ensure the JSON file exists and has an array of messages if it's empty
-          if [ ! -f test.json ]; then
-            echo '{"messages": []}' > test.json
-          fi
-          
-          # Add a new "aaa" to the messages array in the JSON file
-          jq '.messages += ["aaa"]' test.json > tmp.json && mv tmp.json test.json
+          jq '.newKey = "newValue"' data.json > temp.json && mv temp.json data.j
 
       - name: Commit and push changes
 
