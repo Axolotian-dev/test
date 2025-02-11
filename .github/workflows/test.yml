@@ -24,8 +24,8 @@ jobs:
             {"name": "key2", "value": "value2"},
             {"name": "key3", "value": "value3"}
           ]'
-
-          # Process each key-value pair
+          
+          # Process each key-value pair (update or add)
           for kv in $(echo "$KEYS_VALUES" | jq -r '.[] | @base64'); do
             _jq() {
               echo ${kv} | base64 --decode | jq -r ${1}
@@ -40,14 +40,18 @@ jobs:
               test.json > temp.json && mv temp.json test.json
           done
 
-          # Remove any keys in test.json not in the list
+          # Remove any keys not in KEYS_VALUES
           jq --argjson kv "$KEYS_VALUES" '
             . |= with_entries(select(.key as $k | $kv | map(.name) | index($k)))' test.json > temp.json && mv temp.json test.json
 
+          # (Optional) If there are nested keys, you can recursively clean up the JSON by applying the logic to nested objects as well.
+          jq --argjson kv "$KEYS_VALUES" '
+            walk( if type == "object" then
+              with_entries(select(.key as $k | $kv | map(.name) | index($k)))
+            else . end )' test.json > temp.json && mv temp.json test.json
 #--------------------
       - name: Commit and push changes
         run: |
           git add test.json
           git commit -m "Updated JSON"
           git push https://Axolotian-dev:${{ secrets.TOKEN_THING }}@github.com/${{ github.repository }}.git
-        
