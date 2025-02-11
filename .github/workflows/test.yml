@@ -19,19 +19,13 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
 
-      - name: Modify the test JSON file
+      - name: Modify JSON file
         run: |
-          jq '.newKey = "newValue"' test.json > temp.json && mv temp.json data.j
+          jq '.newKey = "newValue"' test.json > temp.json && mv temp.json test.json
 
       - name: Commit and push changes
-
-          
         run: |
-          echo "1"
           git add test.json
-          echo "2"
           git commit -m "Add 'aaa' to messages"
-          echo "3"
           git push https://Axolotian-dev:${{ secrets.TOKEN_THING }}@github.com/${{ github.repository }}.git HEAD:main
-          echo "4"
         
