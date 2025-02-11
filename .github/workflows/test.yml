@@ -1,11 +1,10 @@
 #API_TOKEN_GITHUB
-name: Modify Test JSON File
+name: Update JSON file
 
-on:
-  workflow_dispatch:  # Allows the workflow to be triggered manually from the GitHub interface
+on: [push,workflow_dispatch]
 
 jobs:
-  modify_test_json_file:
+  update_file:
     runs-on: ubuntu-latest  # This will run on the latest Ubuntu runner
 
     steps:
@@ -27,6 +26,6 @@ jobs:
       - name: Commit and push changes
         run: |
           git add test.json
-          git commit -m "Add 'aaa' to messages"
+          git commit -m "Updated JSON"
           git push https://Axolotian-dev:${{ secrets.TOKEN_THING }}@github.com/${{ github.repository }}.git HEAD:main
         
