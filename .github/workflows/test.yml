@@ -33,7 +33,8 @@ jobs:
           git add test.json
           echo "2"
           git commit -m "Add 'aaa' to messages"
-          echo  "3"
+          echo "3"
           git push https://Axolotian-dev:${{ secrets.TOKEN_THING }}@github.com/${{ github.repository }}.git HEAD:main
+          echo "4"
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_THING }}
