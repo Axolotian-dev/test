@@ -5,7 +5,7 @@ on:
     - cron: "0 */2 * * *"  # Trigger every 2 hours
   push:
     branches:
-      - master  # Trigger on pushes to the 'master' branch
+      - main  # Trigger on pushes to the 'master' branch
   workflow_dispatch:  # Manual trigger option
 
 jobs:
