@@ -9,9 +9,11 @@ jobs:
     runs-on: ubuntu-latest  # This will run on the latest Ubuntu runner
 
     steps:
+    
       - name: Checkout repository
-        uses: actions/checkout@v2  # Checkout the code from your repo
-
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.TOKEN_THING }}
       - name: Set up Git user
         run: |
           git config --global user.name "github-actions"
@@ -28,6 +30,8 @@ jobs:
           jq '.messages += ["aaa"]' test.json > tmp.json && mv tmp.json test.json
 
       - name: Commit and push changes
+
+          
         run: |
           echo "1"
           git add test.json
@@ -36,5 +40,4 @@ jobs:
           echo "3"
           git push https://Axolotian-dev:${{ secrets.TOKEN_THING }}@github.com/${{ github.repository }}.git HEAD:main
           echo "4"
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN_THING }}
+        
