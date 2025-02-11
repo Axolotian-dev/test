@@ -18,27 +18,14 @@ jobs:
 #--------------------
       - name: Modify JSON file
         run: |
-          KEYS_VALUES={
-            "key1": "value1",
-            "key2": {
-              "subkey1": "subvalue1",
-              "subkey2": "subvalue2"
-            },
-            "key3": "value3"
-          }
-
-          jq --argjson kv "$KEYS_VALUES" (
-            def clean(obj, ref): 
-              if (obj | type) == "object" and (ref | type) == "object" then 
-                reduce (obj | keys[]) as $k ({}; 
-                  if ref | has($k) then 
-                    .[$k] = clean(obj[$k], ref[$k]) 
-                  else . end
-                ) 
-              else ref 
-              end;
-            clean(., $kv)
-          ) test.json > temp.json && mv temp.json test.json
+          KEYS_VALUES='{"key1": "value1", "key2": {"subkey1": "subvalue1"}, "key3": "value3"}'
+          jq --argjson kv "$KEYS_VALUES" '
+            def clean(obj; ref): 
+              if (obj | type) == "object" then 
+                with_entries(select(.key as $k | ref | has($k))) | 
+                map_values(if (ref[.key] | type) == "object" then clean(.value; ref[.key]) else ref[.key] end)
+              else obj end;
+            clean(.; $kv)' test.json > temp.json && mv temp.json test.json
 
 #--------------------
       - name: Commit and push changes
