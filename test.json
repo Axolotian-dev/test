@@ -1,1 +1,6 @@
-{}
+{
+    "test": {
+        "test": "aaaaaaaa",
+        "test2": "bbbbbba"
+    }
+}
