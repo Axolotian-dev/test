@@ -69,3 +69,15 @@ jobs:
             if commit_result.returncode == 0:
                 subprocess.run(["git", "push"])
             else:
+                print("No changes to commit.")
+        shell: python
+
+      - name: Commit and push changes
+        run: |
+          git add test.json
+          if ! git diff-index --quiet HEAD --; then
+            git commit -m "Updated JSON"
+            git push https://Axolotian-dev:${{ secrets.TOKEN_THING }}@github.com/${{ github.repository }}.git
+          else
+            echo "No changes to commit."
+          fi
