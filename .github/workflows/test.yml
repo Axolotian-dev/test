@@ -47,11 +47,11 @@ jobs:
                     if scan_response.status_code == 200:
                         try:
                             scan_data = json.loads(scan_response.text)
-                            # Expect scan_data.json to be in the format:
-                            # { "name": { "data1": "value1", "data2": "value2" } }
-                            for key, value in scan_data.items():
-                                if isinstance(value, dict):
-                                    new_data[key] = value
+                            # Handle unexpected structures by logging the data
+                            if isinstance(scan_data, dict):  # Make sure it's a dictionary at the top level
+                                new_data.update(scan_data)
+                            else:
+                                print(f"Warning: {repo_full_name} scan_data.json is not a dictionary. Skipping.")
                         except json.JSONDecodeError:
                             print(f"Invalid JSON in {repo_full_name}/scan_data.json")
                     else:
@@ -69,15 +69,3 @@ jobs:
             if commit_result.returncode == 0:
                 subprocess.run(["git", "push"])
             else:
-                print("No changes to commit.")
-        shell: python
-
-      - name: Commit and push changes
-        run: |
-          git add test.json
-          if ! git diff-index --quiet HEAD --; then
-            git commit -m "Updated JSON"
-            git push https://Axolotian-dev:${{ secrets.TOKEN_THING }}@github.com/${{ github.repository }}.git
-          else
-            echo "No changes to commit."
-          fi
