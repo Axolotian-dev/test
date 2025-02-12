@@ -18,9 +18,40 @@ jobs:
 #--------------------
       - name: Modify JSON file
         run: |
-          KEYS_VALUES='{"key1": "value1", "key2": "value2", "key3": "value3"}'
-          jq --argjson kv "$KEYS_VALUES" 'with_entries(select(.key as $k | $kv | has($k))) + $kv' test.json > temp.json && mv temp.json test.json
-
+            import json
+            
+            # Define the JSON file
+            json_file = "test.json"
+      
+            # List of keys and values to update
+            new_data = {
+                "key1": "value1",
+                "key2": "value2",
+                "key3": "value3"
+            }
+      
+            # Read the existing JSON file
+            try:
+                with open(json_file, "r") as f:
+                    current_data = json.load(f)
+            except (FileNotFoundError, json.JSONDecodeError):
+                current_data = {}
+      
+            # Update the JSON file based on new_data
+            updated_data = {k: new_data[k] for k in new_data}
+      
+            # Write back the modified JSON
+            with open(json_file, "w") as f:
+                json.dump(updated_data, f, indent=4)
+      
+            # Commit the changes
+            import subprocess
+            subprocess.run(["git", "config", "--global", "user.name", "github-actions"])
+            subprocess.run(["git", "config", "--global", "user.email", "github-actions@github.com"])
+            subprocess.run(["git", "add", json_file])
+            subprocess.run(["git", "commit", "-m", "Update JSON file"])
+            subprocess.run(["git", "push"])
+        shell: python
 #--------------------
       - name: Commit and push changes
         run: |
